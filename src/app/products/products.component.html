@@ -1,0 +1,50 @@
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>Products list</h3>
+    </div>
+    <div *ngIf="products; else errorTemplate" class="card-body">
+        <table class="table table-striped mt-4">
+            <thead>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Promo</th>
+                <th><!-- remove action --></th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of products" class="align-middle">
+                    <td> {{ product.id }} </td>
+                    <td> {{ product.name }} </td>
+                    <td> {{ product.price }} </td>
+                    <td *ngIf="product.promotion; else notPromo">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <button (click)="handleTogglePromo(product)" class="btn btn-outline-success mx-2">Disactivate</button>
+                    </td>
+                    <ng-template #notPromo>
+                        <td *ngIf="!product.promotion">
+                            <i class="bi bi-check-circle text-danger"></i>
+                            <button (click)="handleTogglePromo(product)" class="btn btn-outline-danger mx-2">Activate</button>
+                        </td>
+                    </ng-template>
+                    
+                    <td> 
+                        <button (click)="removeProduct(product)" class="btn btn-danger"> 
+                            <i class="bi bi-trash"></i> 
+                        </button> 
+                    </td>
+                </tr>
+                <ng-component #errorTemplate>
+                    {{ errorMessage }}
+                </ng-component>
+            </tbody>
+        </table>
+    </div>
+    <ng-template #errorTemplate>
+        <div class="card-body">
+            <div class="alert alert-danger text-center">
+                <p><strong> Cannot get data because of some problem </strong></p>
+                <p>{{ errorMessage }}</p>
+            </div>
+        </div>
+    </ng-template>
+</div>
