@@ -1,0 +1,129 @@
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>Categories list</h3>
+    </div>
+    <div class="card-body overflow-auto">
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th class="text-center">Name</th>
+                    <th>Description</th>
+                    <th class="text-center">Promotion</th>
+                    <th class="text-center">
+                        <button class="btn btn-primary ms-1" style="width: 100px;" data-bs-toggle="modal" data-bs-target="#addForm"> 
+                            <i class="bi bi-plus-circle-fill"></i> 
+                        </button>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let categ of categories">
+                    <td>{{ categ.id }}</td>
+                    <td class="text-center">{{ categ.name }}</td>
+                    <td>{{ categ.description }}</td>
+                    
+                    <td class="text-center">
+                        <i [ngClass]="categ.promotion ? 'bi-check-circle-fill text-success' : 'bi-check-circle text-danger'" class="bi"></i>
+                    </td>
+                    <td class="text-center"> 
+                        <button class="btn btn-outline-secondary me-1" (click)="showModify(categ)" data-bs-toggle="modal" data-bs-target="#modifyForm"> 
+                            <i class="bi bi-pencil-fill"></i>
+                        </button> 
+                        <button (click)="handleDeleteCategory(categ)" class="btn btn-danger ms-1"> 
+                            <i class="bi bi-trash"></i> 
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <ng-template #errorHandle>
+        <div class="alert alert-danger text-center">
+            <strong> Cannot get data because of some problem </strong>
+            Error: {{ errorMessage }}.
+        </div>
+    </ng-template>
+</div>
+
+<div class="modal fade" id="addForm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-light">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Add a new category</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <div class="form-group mt-3 mb-3">
+                        <label for="name" class="form-label">Category's name</label>
+                        <input type="text" id="name" class="form-control" #categName>
+                    </div>
+                    <div class="form-group mt-3 mb-3">
+                        <label for="description" class="form-label">Category's description</label>
+                        <input type="text" id="description" class="form-control" #categDescription>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" (click)="handleAddCategory(categName.value, categDescription.value); 
+                    categName.value = ''; categDescription.value = '';" data-bs-dismiss="modal"> 
+                    Add 
+                </button>
+                <button class="btn btn-danger ms-3" (click)="categName.value = ''; categDescription.value = '';" data-bs-dismiss="modal"> 
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyForm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-light">
+
+            <div class="modal-header">
+                <div>
+                    <h4 class="modal-title">Modify category</h4>
+                    <p class="mt-2"><strong>Id : </strong> {{ selectedCategory.id }} </p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div>
+                    <div class="form-group mt-3 mb-3">
+                        <label for="name" class="form-label">Category's name</label>
+                        <input type="text" id="name" class="form-control" #uCategName value="{{ selectedCategory.name }}">
+                    </div>
+                    <div class="form-group mt-3 mb-3">
+                        <label for="description" class="form-label">Category's description</label>
+                        <input type="text" id="description" class="form-control" #uCategDescription value="{{ selectedCategory.description}}">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-info" (click)="handleAlterCategory({
+                            id : selectedCategory.id,
+                            name : uCategName.value,
+                            description : uCategDescription.value,
+                            promotion : selectedCategory.promotion
+                        }); 
+                        uCategName.value = ''; 
+                        uCategDescription.value = '';" 
+                        data-bs-dismiss="modal"> 
+                    Save 
+                </button>
+                <button class="btn btn-danger ms-3" (click)="categName.value = ''; categDescription.value = '';" data-bs-dismiss="modal"> 
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

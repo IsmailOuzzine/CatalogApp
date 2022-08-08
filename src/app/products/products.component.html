@@ -2,14 +2,29 @@
     <div class="card-header">
         <h3>Products list</h3>
     </div>
-    <div *ngIf="products; else errorTemplate" class="card-body">
+    <div *ngIf="products; else errorTemplate" class="card-body overflow-auto">
+        <form [formGroup]="searchFormGroup">
+            <div class="input-group mt-3">
+                <label for="keyword" class="input-group-text">Keyword</label>
+                <input type="text" name="keyword" id="keyword" class="form-control" formControlName="keyword" (keyup)="handleSearchForm()">
+                <button class="btn btn-info" (click)="handleSearchForm()">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
         <table class="table table-striped mt-4">
             <thead>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Promo</th>
-                <th><!-- remove action --></th>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Promo</th>
+                    <th class="text-right">
+                        <button class="btn btn-primary ms-1" style="width: 100px;" data-bs-toggle="modal" data-bs-target="#addForm"> 
+                            <i class="bi bi-plus-circle-fill"></i> 
+                        </button>
+                    </th>
+                </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let product of products" class="align-middle">
@@ -21,13 +36,16 @@
                         <button (click)="handleTogglePromo(product)" class="btn btn-outline-success mx-2">Disactivate</button>
                     </td>
                     <ng-template #notPromo>
-                        <td *ngIf="!product.promotion">
+                        <td>
                             <i class="bi bi-check-circle text-danger"></i>
                             <button (click)="handleTogglePromo(product)" class="btn btn-outline-danger mx-2">Activate</button>
                         </td>
                     </ng-template>
                     
-                    <td> 
+                    <td class="text-right"> 
+                        <button class="btn btn-outline-secondary me-1" (click)="showModify(product)" data-bs-toggle="modal" data-bs-target="#modifyForm"> 
+                            <i class="bi bi-pencil-fill"></i> 
+                        </button> 
                         <button (click)="removeProduct(product)" class="btn btn-danger"> 
                             <i class="bi bi-trash"></i> 
                         </button> 
@@ -47,4 +65,121 @@
             </div>
         </div>
     </ng-template>
+</div>
+
+<div class="modal fade" id="addForm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-light">
+            <form [formGroup]="AddFormGroup" (ngSubmit)="handleAddProduct()">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Add a new product</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group mt-3 mb-3">
+                        <label for="name" class="form-label">Product's name</label>
+                        <input type="text" id="name" class="form-control" formControlName="name">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="price" class="form-label">Product's price</label>
+                        <input type="number" id="price" class="form-control" formControlName="price">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="stock" class="form-label">In stock</label>
+                        <input type="number" id="stock" class="form-control" formControlName="stock">
+                    </div>
+
+                    <div class="form-check form-switch mt-3 mb-3">
+                        <label class="form-check-label" for="promotion">Is in promotion</label>
+                        <input class="form-check-input" type="checkbox" id="promotion" formControlName="promotion">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="infos" class="form-label">Infos</label>
+                        <input type="text" id="infos" class="form-control" formControlName="infos">
+                    </div>
+
+                    <div class="form-group my-3">
+                        <select id="category" class="form-select" formControlName="category">
+                            <option value="">Product's category</option>
+                            <option *ngFor="let categ of categories" [ngValue]="categ">{{ categ.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" [disabled]="!AddFormGroup.valid" class="btn btn-primary" data-bs-dismiss="modal"> 
+                        Add 
+                    </button>
+                    <button class="btn btn-danger ms-3" data-bs-dismiss="modal"> 
+                        Cancel
+                    </button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modifyForm">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-light">
+            
+            <form [formGroup]="updateFormGroup" (ngSubmit)="handleUpdateProduct()">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="modal-title">Modify the product</h4>
+                        <p class="my-2"><strong>ID : </strong>{{selectedProduct.id}}</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="name" class="form-label">Product's name</label>
+                        <input type="text" id="name" class="form-control" formControlName="name">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="price" class="form-label">Product's price</label>
+                        <input type="number" id="price" class="form-control" formControlName="price">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="stock" class="form-label">In stock</label>
+                        <input type="number" id="name" class="form-control" formControlName="stock">
+                    </div>
+
+                    <div class="form-check form-switch mt-3 mb-3">
+                        <label class="form-check-label" for="promotion">Is in promotion</label>
+                        <input class="form-check-input" type="checkbox" id="promotion" [checked]="selectedProduct.promotion" formControlName="promotion">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="infos" class="form-label">Infos</label>
+                        <input type="text" id="infos" class="form-control" formControlName="infos">
+                    </div>
+
+                    <div class="form-group mt-3 mb-3">
+                        <label for="categ" class="form-label">Product's category</label>
+                        <p type="text" id="categ" class="form-control">{{selectedProduct.category.name}}</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"> 
+                        Save 
+                    </button>
+                    <button class="btn btn-danger ms-3" data-bs-dismiss="modal"> 
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
